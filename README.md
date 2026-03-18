@@ -2,7 +2,7 @@
 
 **A standalone, zero-dependency derivative analytics workbench built entirely in vanilla HTML/JS/CSS.**
 
-Live demo → [**lucabesomi.github.io/options-analytics**](https://besox12.github.io/options-analytics)
+Live demo → [**besox12.github.io/options-analytics**](https://besox12.github.io/options-analytics)
 
 ![Dark Theme](https://img.shields.io/badge/theme-dark%20%2F%20light-1a1a2e?style=flat-square)
 ![Zero Dependencies](https://img.shields.io/badge/dependencies-zero-22d68a?style=flat-square)

@@ -873,12 +873,12 @@ cv("overlay").addEventListener("click",closeMenus);
 function closeMenus(){cv("instDrop").classList.remove("open");cv("stratDrop").classList.remove("open");cv("overlay").classList.remove("open");openDrop=null;}
 
 // ═══════════════ CRUD ═══════════════
-function addInstrument(typeId,op){instruments.push({id:++uid,type:typeId,params:op?{...op}:defaults(typeId),color:COLORS[instruments.length%COLORS.length],visible:true});renderAll();}
-function removeInstrument(id){instruments=instruments.filter(i=>i.id!==id);renderAll();}
-function toggleVis(id){const i=instruments.find(x=>x.id===id);if(i)i.visible=!i.visible;renderAll();}
+function addInstrument(typeId,op){if(!window._loadingStrat){window._activeStrategy=null;_animComb=null;}instruments.push({id:++uid,type:typeId,params:op?{...op}:defaults(typeId),color:COLORS[instruments.length%COLORS.length],visible:true});renderAll();}
+function removeInstrument(id){window._activeStrategy=null;_animComb=null;instruments=instruments.filter(i=>i.id!==id);renderAll();}
+function toggleVis(id){const i=instruments.find(x=>x.id===id);if(i)i.visible=!i.visible;window._activeStrategy=null;_animComb=null;renderAll();}
 function updateParam(id,key,val){const i=instruments.find(x=>x.id===id);if(i)i.params[key]=Number(val);const el=cv(`v-${id}-${key}`);if(el)el.textContent=Number(val);drawChart();updateAnnotations();if(activeTab==="greeks")drawGreeks();if(activeTab==="pnl")renderPnlAnalysis();if(activeTab==="heatmap")drawHeatmap();if(activeTab==="multiexp")drawMultiExp();}
-function clearAll(){instruments=[];renderAll();}
-function loadStrategy(sid){const st=STRATEGIES.find(s=>s.id===sid);if(!st)return;instruments=[];uid=0;window._activeStrategy=st;window._loadingStrat=true;st.instruments.forEach(si=>addInstrument(si.type,si.params));window._loadingStrat=false;}
+function clearAll(){instruments=[];_animComb=null;window._activeStrategy=null;renderAll();}
+function loadStrategy(sid){const st=STRATEGIES.find(s=>s.id===sid);if(!st)return;instruments=[];uid=0;_animComb=null;window._activeStrategy=st;window._loadingStrat=true;st.instruments.forEach(si=>addInstrument(si.type,si.params));window._loadingStrat=false;}
 
 // ═══════════════ GREEKS UI ═══════════════
 const GREEKS=["delta","gamma","vega","theta","rho"];
@@ -992,9 +992,6 @@ function drawChart(){
       return sum+sign2*q*(bsV-prem);
     },0);
   });
-  // Smooth animation: interpolate from previous frame
-  if(_animComb&&_animComb.length===comb.length){for(let i=0;i<comb.length;i++)comb[i]=_animComb[i]+.3*(comb[i]-_animComb[i]);}
-  _animComb=[...comb];
   let allV=[...comb];indiv.forEach(i=>{if(i.visible)allV.push(...i.vals);});if(!allV.length)allV=[-50,50];
   let yMin=Math.min(...allV,0),yMax=Math.max(...allV,0);const yPad=Math.max((yMax-yMin)*.15,10);yMin-=yPad;yMax+=yPad;
   const toX=p=>mg.left+((p-viewMin)/(viewMax-viewMin))*pW,toY=v=>mg.top+((yMax-v)/(yMax-yMin))*pH;
